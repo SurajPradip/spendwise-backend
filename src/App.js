@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import Login from './component/front.jsx';
+import Home from './component/home.jsx';
+import Navbar from './component/navbar.jsx';  // Import the Navbar component
+import './index.css';
 
-function App() {
+const App = () => {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="h-screen flex flex-col">
+      {!isLoginPage && <Navbar />}
+      <div className="flex flex-grow items-center justify-center">
+        <Routes>
+          <Route path='/login' element={<Login />} />
+          <Route path='/home' element={<Home />} />
+        </Routes>
+      </div>
     </div>
   );
-}
+};
 
-export default App;
+const AppWrapper = () => (
+  <Router>
+    <App />
+  </Router>
+);
+
+export default AppWrapper;
