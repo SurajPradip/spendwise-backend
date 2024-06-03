@@ -23,11 +23,8 @@ class ListSpendingObjSerializer(serializers.ModelSerializer):
         fields = ('id','date','reason','category','price')
 
 class CatExpensesSerializer(serializers.ModelSerializer):
-    date = serializers.SerializerMethodField()
-    
-    def get_date(self,obj):
-        return obj.date.strftime('%d-%m-%Y')
+    category = serializers.CharField(source='get_category_display')
     
     class Meta:
         model = SpendwiseBasicDetails
-        fields = ('date','reason','price')
+        fields = ('category','price')

@@ -20,3 +20,6 @@ class SpendwiseBasicDetails(models.Model):
     reason = models.CharField(max_length=200)
     category = models.IntegerField(default=CategoryChoices.FOOD,choices=CategoryChoices.choices)
     price = models.FloatField()
+    
+    def __str__(self) -> str:
+        return f'{self.reason}-{self.price}'

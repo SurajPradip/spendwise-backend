@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework.response import Response
 from .serializers import *
+from django.utils import timezone
 
 class CreateOrListSpendingObjAPIview(generics.GenericAPIView):
     serializer_class = CreateSpendingObjSerializer
@@ -18,38 +19,56 @@ class CreateOrListSpendingObjAPIview(generics.GenericAPIView):
         return Response({"Msg":serializer.errors})
 
 class GetPerDayExpense(generics.GenericAPIView):   
+    month = timezone.now().month
     
     def generate_daily_expense(self,expenses):
-        expense_dict = {}
+        expense_dict = {
+            'labels':[],
+            'data':[],
+            'index':{}
+        }
         for item in expenses:
-            date = item['date'].strftime('%d-%m-%Y')
-            if date not in expense_dict:
-                expense_dict[date] = {
-                    'price':item['price'],
-                    's_faction':2,
-                    'reason':[item['reason']] if item['price'] > 700 else [],
-                    'categories':[item['category']]
-                }
+            date = item['date'].strftime('%d')
+            if date not in expense_dict['labels']:
+                expense_dict['labels'].append(date)
+                expense_dict['data'].append(item['price'])
+                expense_dict['index'][date]=expense_dict['labels'].index(date)
             else:
-                expense_dict[date]['price'] += item['price']
-                expense_dict[date]['s_faction'] = 2
-                if item['price'] > 700:
-                    expense_dict[date]['reason'].append(item['reason'])
-                
-                if not item['category'] in expense_dict[date]['categories']:
-                    expense_dict[date]['categories'].append(item['category'])
+                index = expense_dict['labels'].index(date)
+                expense_dict['data'][index] += item['price']
+
         return expense_dict
              
     def get(self,request,*args,**kwargs):
-        expenses = SpendwiseBasicDetails.objects.all().values('date','reason','category','price')
+        expenses = SpendwiseBasicDetails.objects.filter(date__month=self.month)\
+            .order_by('date').values('date','reason','category','price')
+            
         daily_expense = self.generate_daily_expense(expenses)
         return Response({"expense_per_day":daily_expense})
 
 class GetCategoryWiseExpense(generics.GenericAPIView):
     serializer_class = CatExpensesSerializer
+    month = timezone.now().month
+    
+    def generate_category_chart(self,expenses):
+        expense_dict = {
+            'labels':[],
+            'data':[],
+            'index':{}
+        }
+        for item in expenses:
+            if item['category'] not in expense_dict['labels']:
+                expense_dict['labels'].append(item['category'])
+                expense_dict['data'].append(item['price'])
+                expense_dict['index'][item['category']]=expense_dict['labels'].index(item['category'])
+            else:
+                index = expense_dict['labels'].index(item['category'])
+                expense_dict['data'][index] += item['price']
+        return expense_dict
+                
         
     def get(self,request,*args,**kwargs):
-        category_id = self.kwargs['category_id']
-        cat_expenses_objs = SpendwiseBasicDetails.objects.filter(category=category_id)
-        cat_expenses = self.get_serializer(cat_expenses_objs,many=True)
-        return Response({"category_wise":cat_expenses.data})
+        cat_expenses_objs= SpendwiseBasicDetails.objects.filter(date__month=self.month).order_by('category')
+        serialized_data = self.get_serializer(cat_expenses_objs,many=True)
+        cat_expenses = self.generate_category_chart(serialized_data.data)
+        return Response({"category_wise":cat_expenses})
