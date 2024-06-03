@@ -22,8 +22,8 @@ const ExpenseListing = () => {
 
     return (
         <div className="table-container h-full">
-            <table className="table-auto w-full bg-blue-200">
-                <thead className="sticky top-0 bg-blue-300">
+            <table className="table-auto w-full ">
+                <thead className="sticky top-0 !bg-gray-300">
                     <tr>
                         <th className="px-4 py-2 text-center border border-black">Date</th>
                         <th className="px-4 py-2 text-center border border-black">Reason</th>
@@ -34,7 +34,7 @@ const ExpenseListing = () => {
                 </thead>
                 <tbody>
                     {spending.response && spending.response.map((element, index) => (
-                        <tr key={index} className="bg-blue-200 hover:bg-indigo-300 hover:shadow text-center border-b border-gray-400">
+                        <tr key={index} className="!bg-white hover:bg-indigo-300 hover:shadow text-center border-b border-gray-400">
                             <td className="px-4 py-2 border-r border-gray-400">{element.date}</td>
                             <td className="px-4 py-2 border-r border-gray-400">{element.reason}</td>
                             <td className="px-4 py-2 border-r border-gray-400">{element.category}</td>
