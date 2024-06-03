@@ -212,7 +212,7 @@ const options_bar = {
   
 
 
-const Home = () => {
+  const Home = () => {
     // if (loading) {
     //     return <div>Loading...</div>;
     //   }
@@ -229,15 +229,15 @@ const Home = () => {
             </div>
             <div className="flex flex-col w-full md:w-1/4 items-center justify-center p-1">
                 <div className="flex-1 w-full bg-red-100 flex items-center justify-center shadow-xl mb-1">
-                    <Line data={data} options={options_line} className="shadow-xl" />
+                    <Line data={data} options={options_line} className="hover:shadow-2xl rounded-lg hover:cursor-pointer" />
                 </div>
                 <div className="flex-1 w-full bg-blue-100 flex items-center justify-center shadow-xl mb-1">
-                    <Bar data={data_bar} options={options_bar} className="shadow-xl" />
+                    <Bar data={data_bar} options={options_bar} className="hover:shadow-2xl rounded-lg hover:cursor-pointer" />
                 </div>
             </div>
         </div>
     );
-};
+};  
 
 export default Home;
 
