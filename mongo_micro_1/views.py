@@ -42,6 +42,9 @@ class GetPerDayExpense(generics.GenericAPIView):
     def get(self,request,*args,**kwargs):
         expenses = SpendwiseBasicDetails.objects.filter(date__month=self.month)\
             .order_by('date').values('date','reason','category','price')
+        if not expenses:
+            expenses = SpendwiseBasicDetails.objects.filter(date__month=self.month-1)\
+            .order_by('date').values('date','reason','category','price')
             
         daily_expense = self.generate_daily_expense(expenses)
         return Response({"expense_per_day":daily_expense})
@@ -72,3 +75,17 @@ class GetCategoryWiseExpense(generics.GenericAPIView):
         serialized_data = self.get_serializer(cat_expenses_objs,many=True)
         cat_expenses = self.generate_category_chart(serialized_data.data)
         return Response({"category_wise":cat_expenses})
+
+class DeleteSpendingObjAPIView(generics.GenericAPIView):
+    def get_object(self,spending_obj_id):
+        try:
+            return SpendwiseBasicDetails.objects.get(id=spending_obj_id)
+        except:
+            return None
+
+    def delete(self,request,*args,**kargs):
+        spend_obj = self.get_object(self.kwargs['spending_id'])
+        if not spend_obj:
+            return Response({"response":'error'})
+        spend_obj.delete()
+        return Response({"Response":"success"})
