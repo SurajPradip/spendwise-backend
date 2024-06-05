@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import React from "react";
 import api from './api';
 
-const ExpenseListing = () => {
+const ExpenseListing = ({refreshGraph}) => {
     const [spending, setSpending] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -24,6 +24,7 @@ const ExpenseListing = () => {
         try {
             await api.delete(`/django/delete-spending-obj/${id}/`);
             setSpending(spending.filter(item => item.id !== id));
+            refreshGraph();
         } catch (err) {
             console.log(err);
         }

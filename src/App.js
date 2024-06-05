@@ -4,6 +4,7 @@ import Login from './component/front.jsx';
 import Home from './component/home.jsx';
 import Navbar from './component/navbar.jsx';  // Import the Navbar component
 import './index.css';
+import Dashboard from './component/Dashboard.jsx';
 
 const App = () => {
   const location = useLocation();
@@ -15,7 +16,8 @@ const App = () => {
       <div className="flex flex-grow items-center justify-center">
         <Routes>
           <Route path='/login' element={<Login />} />
-          <Route path='/home' element={<Home />} />
+          <Route path='/expense' element={<Home />} />
+          <Route path='/dashboard' element={<Dashboard />} />
         </Routes>
       </div>
     </div>

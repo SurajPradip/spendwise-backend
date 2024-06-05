@@ -11,7 +11,7 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     if (username === 'user' && password === 'SURAJ12!@') {
-      navigate('/home');
+      navigate('/dashboard');
     } else {
       setErrorMessage('Invalid credentials');
     }

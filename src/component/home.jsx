@@ -89,44 +89,46 @@ const options_bar = {
         ],
     });
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const lineResponse = await api.get('/django/get-per-day-expense/');
-                const barResponse = await api.get('/django/get-category-wise-expense/');
-    
-                if (lineResponse.data.expense_per_day) {
-                    const lineData = {
-                        labels: lineResponse.data.expense_per_day.labels,
-                        datasets: [{
-                            label: 'Expense',
-                            data: lineResponse.data.expense_per_day.data,
-                            borderColor: 'rgba(75,192,192,1)',
-                            backgroundColor: 'rgba(75,192,192,0.2)',
-                            fill: true,
-                        }],
-                    };
-                    setGraphData(lineData);
-                }
-    
-                if (barResponse.data.category_wise) {
-                    const barData = {
-                        labels: barResponse.data.category_wise.labels,
-                        datasets: [{
-                            label: 'Expense',
-                            data: barResponse.data.category_wise.data,
-                            borderColor: 'rgba(75,192,192,1)',
-                            backgroundColor: 'rgba(0,255,255,0.5)',
-                            fill: true,
-                        }],
-                    };
-                    setBarData(barData);
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
+    const fetchData = async () => {
+        try {
+            const lineResponse = await api.get('/django/get-per-day-expense/');
+            const barResponse = await api.get('/django/get-category-wise-expense/');
+
+            if (lineResponse.data.expense_per_day) {
+                const lineData = {
+                    labels: lineResponse.data.expense_per_day.labels,
+                    datasets: [{
+                        label: 'Expense',
+                        data: lineResponse.data.expense_per_day.data,
+                        borderColor: 'rgba(75,192,192,1)',
+                        backgroundColor: 'rgba(75,192,192,0.2)',
+                        fill: true,
+                    }],
+                };
+                setGraphData(lineData);
             }
-        };
+
+            if (barResponse.data.category_wise) {
+                const barData = {
+                    labels: barResponse.data.category_wise.labels,
+                    datasets: [{
+                        label: 'Expense',
+                        data: barResponse.data.category_wise.data,
+                        borderColor: 'rgba(75,192,192,1)',
+                        backgroundColor: 'rgba(0,255,255,0.5)',
+                        fill: true,
+                        maxBarThickness:50,
+                    }],
+                };
+                setBarData(barData);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
     
+    useEffect(() => {
         fetchData();
     }, []);
     
@@ -138,7 +140,7 @@ const options_bar = {
                     <ExpenseForm />
                 </div>
                 <div className="scrollable-container w-full relative mt-4">
-                    <ExpenseListing />
+                    <ExpenseListing refreshGraph={fetchData}/>
                 </div>
             </div>
             <div className="flex flex-col w-full md:w-1/4 items-center justify-center p-1">
