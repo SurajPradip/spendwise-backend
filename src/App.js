@@ -1,15 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Login from './component/front.jsx';
 import Home from './component/home.jsx';
-import Navbar from './component/navbar.jsx';  // Import the Navbar component
+import Navbar from './component/navbar.jsx';  
 import './index.css';
 import Dashboard from './component/Dashboard.jsx';
 
 const App = () => {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
-
   return (
     <div className="h-screen flex flex-col">
       {!isLoginPage && <Navbar />}

@@ -134,25 +134,28 @@ const options_bar = {
     
 
     return (
-        <div className="flex w-full h-full">
+        <div className="flex w-full">
             <div className="hidden md:flex md:w-3/4 bg-gray-100 flex-col items-center justify-start shadow-2xl">
                 <div className=" h-1/12 md:w-full mt-5 px-4 rounded-3xl flex items-center justify-center">
                     <ExpenseForm />
                 </div>
-                <div className="scrollable-container w-full relative mt-4">
+                <div className="scrollable-container w-full  relative mt-4 " >
                     <ExpenseListing refreshGraph={fetchData}/>
                 </div>
             </div>
-            <div className="flex flex-col w-full md:w-1/4 items-center justify-center p-1">
-                <div className="flex-1 w-full bg-red-100 flex items-center justify-center shadow-xl mb-1">
+            <div className="flex flex-col w-full md:w-1/4 items-start justify-start p-1">
+                <div className="w-full bg-red-100 flex items-center justify-center shadow-xl mb-1 mt-5" style={{ height: "500px" }}>
                     <Line data={graphData} options={options_line} className="hover:shadow-2xl rounded-lg hover:cursor-pointer" />
                 </div>
-                <div className="flex-1 w-full bg-blue-100 flex items-center justify-center shadow-xl mb-1">
-                   <Bar data={barData} options={options_bar} className="hover:shadow-2xl rounded-lg hover:cursor-pointer" />
+                <div className="w-full bg-blue-100 flex items-center justify-center shadow-xl mb-1" style={{ height: "500px" }}>
+                    <Bar data={barData} options={options_bar} className="hover:shadow-2xl rounded-lg hover:cursor-pointer" />
                 </div>
             </div>
+
         </div>
+        
     );
+
 };  
 
 export default Home;

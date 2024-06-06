@@ -25,3 +25,9 @@ code {
   flex: 1;
   overflow-y: auto;
 }
+/* Add this to your index.css or any relevant CSS file */
+.chart-container {
+  max-height: 400px; /* Adjust this value as needed */
+  width: 100%;
+  overflow: auto;
+}

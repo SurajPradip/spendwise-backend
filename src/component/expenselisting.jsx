@@ -35,9 +35,9 @@ const ExpenseListing = ({refreshGraph}) => {
     };
 
     return (
-        <div className="table-container h-full">
-            <table className="table-auto w-full ">
-                <thead className="sticky top-0 !bg-gray-300">
+        <div className="flex flex-col overflow-y-auto" style={{"height":'900px'}}>
+            <table className="table-auto flex-grow">
+                <thead className="sticky top-0 !bg-gray-300 z-10">
                     <tr>
                         <th className="px-4 py-2 text-center border border-black">Date</th>
                         <th className="px-4 py-2 text-center border border-black">Reason</th>

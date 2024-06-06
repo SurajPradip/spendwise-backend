@@ -138,10 +138,17 @@ const ExpenseForm = () => {
                   name="category"
               >
                   <option value={1}>Food</option>
-                  <option value={2}>Transportation</option>
-                  <option value={3}>Entertainment</option>
-                  <option value={4}>Health</option>
-                  <option value={5}>Other</option>
+                  <option value={2}>Apartment</option>
+                  <option value={3}>Petrol</option>
+                  <option value={4}>Regret</option>
+                  <option value={5}>Luxury</option>
+                  <option value={6}>Others</option>
+                  <option value={7}>Investment</option>
+                  <option value={8}>Home</option>
+                  <option value={9}>Debt</option>
+                  <option value={10}>Travel</option>
+                  <option value={11}>Self Care</option>
+                  <option value={12}>Donations</option>
               </select>
           </div>
           <div className="flex flex-col">
