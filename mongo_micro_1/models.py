@@ -10,16 +10,24 @@ class UserProfile(models.Model):
 
 class CategoryChoices(models.IntegerChoices):
     FOOD = 1, "Food"
-    TRANSPORTATION = 2, "Transportation"
-    ENTERTAINMENT = 3, "Entertainment",
-    HEALTH = 4, "Health",
-    OTHERS = 5, "Others"
+    APARTMENT = 2, "Apartment"
+    PETROL = 3, "Petrol",
+    REGRET = 4, "Regret",
+    LUXURY = 5, "Luxury",
+    OTHERS = 6 , "Others",
+    INVESTMENT = 7, "Investment",
+    HOME = 8 , "Home",
+    DEBT = 9 ,"Debt",
+    TRAVEL = 10 ,"Travel",
+    SELF_CARE = 11 , "Self Care",
+    DONATIONS = 12 , "Donations"
 
 class SpendwiseBasicDetails(models.Model):
     date = models.DateTimeField()
     reason = models.CharField(max_length=200)
     category = models.IntegerField(default=CategoryChoices.FOOD,choices=CategoryChoices.choices)
     price = models.FloatField()
+    s_faction = models.FloatField(default=2.5)
     
     def __str__(self) -> str:
         return f'{self.reason}-{self.price}'

@@ -28,3 +28,16 @@ class CatExpensesSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpendwiseBasicDetails
         fields = ('category','price')
+
+class DayExpenseSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='get_category_display')
+    date = serializers.SerializerMethodField()
+    
+    def get_date(self,obj):
+        try:
+            return obj.date.strftime('%d')
+        except:
+            return ''
+    class Meta:
+        model=SpendwiseBasicDetails
+        fields=('id','category','reason','price','date')
