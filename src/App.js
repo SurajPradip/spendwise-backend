@@ -10,9 +10,9 @@ const App = () => {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
   return (
-    <div className="h-screen flex flex-col">
+    <div className="min-h-screen bg-gray-100">
       {!isLoginPage && <Navbar />}
-      <div className="flex flex-grow items-center justify-center">
+      <div className="p-4 w-full h-screen">
         <Routes>
           <Route path='/login' element={<Login />} />
           <Route path='/expense' element={<Home />} />

@@ -2,6 +2,7 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -9,6 +10,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
 }
 
 code {
@@ -16,10 +18,18 @@ code {
     monospace;
 }
 
-.table-container {
-  height: calc(100% - 1/12 * 100%);
+.table-body {
+  display: block;
+  max-height: 400px; /* Adjust as needed */
   overflow-y: auto;
 }
+
+.table-body tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
 
 .scrollable-container {
   flex: 1;

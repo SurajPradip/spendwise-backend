@@ -42,121 +42,112 @@ const options_line = {
   },
 };
 
-
 const options_bar = {
-    plugins: {
-      title: {
-        display: true,
-        text: 'Category Wise',
-      },
+  plugins: {
+    title: {
+      display: true,
+      text: 'Category Wise',
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
     },
-    maintainAspectRatio: false,
-  };
+  },
+  maintainAspectRatio: false,
+};
+
+const Home = () => {
+  const [graphData, setGraphData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Dataset 1',
+        data: [],
+        borderColor: 'rgba(75,192,192,1)',
+        backgroundColor: 'rgba(75,192,192,0.2)',
+        fill: true,
+      },
+    ],
+  });
   
+  const [barData, setBarData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Expense',
+        data: [],
+        backgroundColor: 'rgba(75,192,192,0.4)',
+        borderColor: 'rgba(75,192,192,1)',
+        borderWidth: 1,
+      },
+    ],
+  });
 
+  const fetchData = async () => {
+    try {
+      const lineResponse = await api.get('/django/get-per-day-expense/');
+      const barResponse = await api.get('/django/get-category-wise-expense/');
 
-  const Home = () => {
-    // if (loading) {
-    //     return <div>Loading...</div>;
-    //   }
-    const[graphData,setGraphData]=useState({
-        labels: [],
-        datasets: [
-        {
-            label: 'Dataset 1',
-            data: [],
+      if (lineResponse.data.expense_per_day) {
+        const lineData = {
+          labels: lineResponse.data.expense_per_day.labels,
+          datasets: [{
+            label: 'Expense',
+            data: lineResponse.data.expense_per_day.data,
             borderColor: 'rgba(75,192,192,1)',
             backgroundColor: 'rgba(75,192,192,0.2)',
             fill: true,
-        },
-        ],
-    })
-    const[barData,setBarData]=useState({
-        labels: [],
-        datasets: [
-            {
-                label: 'Expense',
-                data: [],
-                backgroundColor: 'rgba(75,192,192,0.4)',
-                borderColor: 'rgba(75,192,192,1)',
-                borderWidth: 1,
-            },
-        ],
-    });
+          }],
+        };
+        setGraphData(lineData);
+      }
 
-    const fetchData = async () => {
-        try {
-            const lineResponse = await api.get('/django/get-per-day-expense/');
-            const barResponse = await api.get('/django/get-category-wise-expense/');
+      if (barResponse.data.category_wise) {
+        const barData = {
+          labels: barResponse.data.category_wise.labels,
+          datasets: [{
+            label: 'Expense',
+            data: barResponse.data.category_wise.data,
+            borderColor: 'rgba(75,192,192,1)',
+            backgroundColor: 'rgba(0,255,255,0.5)',
+            fill: true,
+            maxBarThickness: 50,
+          }],
+        };
+        setBarData(barData);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-            if (lineResponse.data.expense_per_day) {
-                const lineData = {
-                    labels: lineResponse.data.expense_per_day.labels,
-                    datasets: [{
-                        label: 'Expense',
-                        data: lineResponse.data.expense_per_day.data,
-                        borderColor: 'rgba(75,192,192,1)',
-                        backgroundColor: 'rgba(75,192,192,0.2)',
-                        fill: true,
-                    }],
-                };
-                setGraphData(lineData);
-            }
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-            if (barResponse.data.category_wise) {
-                const barData = {
-                    labels: barResponse.data.category_wise.labels,
-                    datasets: [{
-                        label: 'Expense',
-                        data: barResponse.data.category_wise.data,
-                        borderColor: 'rgba(75,192,192,1)',
-                        backgroundColor: 'rgba(0,255,255,0.5)',
-                        fill: true,
-                        maxBarThickness:50,
-                    }],
-                };
-                setBarData(barData);
-            }
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
-
-    
-    useEffect(() => {
-        fetchData();
-    }, []);
-    
-
-    return (
-        <div className="flex w-full">
-            <div className="hidden md:flex md:w-3/4 bg-gray-100 flex-col items-center justify-start shadow-2xl">
-                <div className=" h-1/12 md:w-full mt-5 px-4 rounded-3xl flex items-center justify-center">
-                    <ExpenseForm />
-                </div>
-                <div className="scrollable-container w-full  relative mt-4 " >
-                    <ExpenseListing refreshGraph={fetchData}/>
-                </div>
-            </div>
-            <div className="flex flex-col w-full md:w-1/4 items-start justify-start p-1">
-                <div className="w-full bg-red-100 flex items-center justify-center shadow-xl mb-1 mt-5" style={{ height: "500px" }}>
-                    <Line data={graphData} options={options_line} className="hover:shadow-2xl rounded-lg hover:cursor-pointer" />
-                </div>
-                <div className="w-full bg-blue-100 flex items-center justify-center shadow-xl mb-1" style={{ height: "500px" }}>
-                    <Bar data={barData} options={options_bar} className="hover:shadow-2xl rounded-lg hover:cursor-pointer" />
-                </div>
-            </div>
-
+  return (
+    <div className="container mx-auto p-4">
+      <div className="w-full mb-4">
+        <ExpenseForm />
+      </div>
+      <div className="flex flex-col md:flex-row">
+        <div className="w-full md:w-2/3 p-2">
+          <ExpenseListing refreshGraph={fetchData} />
         </div>
-        
-    );
-
-};  
+        <div className="w-full md:w-1/3 p-2  ">
+          <div className="flex flex-col sticky top-0">
+            <div className="w-full p-2 hover:scale-105 transition transform duration-300">
+              <Line data={graphData} options={options_line} className="h-96 hover:shadow-2xl hover:cursor-pointer rounded-2xl" />
+            </div>
+            <div className="w-full p-2 hover:scale-105 transition transform duration-300">
+              <Bar data={barData} options={options_bar} className="h-96 hover:shadow-2xl hover:cursor-pointer rounded-2xl" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default Home;
-

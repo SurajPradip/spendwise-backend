@@ -18,7 +18,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex w-full h-full">
+    <div className="flex w-full h-full ">
       <div className="flex w-full md:w-1/4 items-center justify-center p-8">
         <div className="w-full max-w-md">
           <h1 className="text-4xl font-bold text-center mb-4">Spendwise</h1>
@@ -56,7 +56,7 @@ const Login = () => {
             {errorMessage && (
               <div className="text-red-500 text-sm mb-4">
                 {errorMessage}
-              </div>
+              </div> 
             )}
             <button
               type="submit"
