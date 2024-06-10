@@ -10,7 +10,10 @@ class CreateOrListSpendingObjAPIview(generics.GenericAPIView):
     msg_ob = Custommessage()
 
     def get(self,request,*args,**kwargs):
-        data = SpendwiseBasicDetails.objects.all().order_by('-date')
+        month = request.GET.get('month') if request.GET.get('month') else timezone.now().month
+        year = request.GET.get('year') if request.GET.get('year') else timezone.now().year
+        
+        data = SpendwiseBasicDetails.objects.filter(date__month=month,date__year=year).order_by('-date')
         serialized_data = ListSpendingObjSerializer(data,many=True).data
         return Response({"status":True, "msg": self.msg_ob.listed_successfully, 
                 "response":serialized_data},status=status.HTTP_200_OK) 
@@ -27,8 +30,7 @@ class CreateOrListSpendingObjAPIview(generics.GenericAPIView):
                 "response":{}}, status=status.HTTP_400_BAD_REQUEST) 
 
 class GetPerDayExpense(generics.GenericAPIView):   
-    serializer_class = DayExpenseSerializer
-    month = timezone.now().month
+    serializer_class = DayExpenseGraphSerializer
     msg_ob = Custommessage()
     
     def generate_daily_expense(self,expenses):
@@ -50,12 +52,10 @@ class GetPerDayExpense(generics.GenericAPIView):
         return expense_dict
              
     def get(self,request,*args,**kwargs):
-        spend_objs = SpendwiseBasicDetails.objects.filter(date__month=self.month)\
-            .order_by('date')
-        while not spend_objs:                                                                      #Prev month
-            spend_objs = SpendwiseBasicDetails.objects.filter(date__month=self.month-1)\
-            .order_by('date')
+        month = request.GET.get('month') if request.GET.get('month') else timezone.now().month
+        year = request.GET.get('year') if request.GET.get('year') else timezone.now().year
         
+        spend_objs = SpendwiseBasicDetails.objects.filter(date__month=month,date__year=year,is_active=True)
         expenses = self.get_serializer(spend_objs,many=True).data
         daily_expense = self.generate_daily_expense(expenses)
         return Response({"status":True, 
@@ -85,11 +85,12 @@ class GetCategoryWiseExpense(generics.GenericAPIView):
                 
         
     def get(self,request,*args,**kwargs):
-        cat_expenses_objs= SpendwiseBasicDetails.objects.filter(date__month=self.month).order_by('category')
-        while not cat_expenses_objs:                                                                                         #Prev month
-            cat_expenses_objs = SpendwiseBasicDetails.objects.filter(date__month=self.month-1).order_by('category') 
+        month = request.GET.get('month') if request.GET.get('month') else timezone.now().month
+        year = request.GET.get('year') if request.GET.get('year') else timezone.now().year
+        
+        cat_expenses_objs = SpendwiseBasicDetails.objects.filter(date__month=month,date__year=year,is_active=True) 
         serialized_data = self.get_serializer(cat_expenses_objs,many=True)
-        cat_expenses = self.generate_category_chart(serialized_data.data)
+        cat_expenses = self.generate_category_chart(serialized_data.data) if serialized_data else {}
         return Response({"status":True, 
                     "msg": self.msg_ob.listed_successfully, 
                     "category_wise":cat_expenses}, status=status.HTTP_200_OK)
@@ -108,7 +109,7 @@ class DeleteSpendingObjAPIView(generics.GenericAPIView):
         if not spend_obj:
             return Response({"status":True, "msg": self.msg_ob.obj_deleted, 
                     "response":{}}, status=status.HTTP_200_OK)
-        spend_obj.delete()
+        spend_obj.update(is_active=False)
         return Response({"status":True, 
                 "msg": self.msg_ob.listed_successfully, 
                 "response":{}}, status=status.HTTP_200_OK)
@@ -118,21 +119,58 @@ class SpendingSummaryAPIView(generics.GenericAPIView):
     month = timezone.now().month
     
     def get(self,request,*args,**kwargs):
+        month = request.GET.get('month') if request.GET.get('month') else timezone.now().month
+        year = request.GET.get('year') if request.GET.get('year') else timezone.now().year
+        
+        spend_objs = SpendwiseBasicDetails.objects.filter(date__month=month,date__year=year,is_active=True)
+        if spend_objs:
+            aggregates = spend_objs.aggregate(
+                total_spending=Sum('price'),
+                total_s_faction = Sum('s_faction')
+            )
+            print(spend_objs,'---------------------------------')
+            balance = 1000 #Balance workflow (Income,Salary,-Total_spending)
+            avg_s_faction = aggregates['total_s_faction']/spend_objs.count()
+            spending_per_day = aggregates['total_spending']/spend_objs.values('date').distinct().count()
+            response_dict = {
+                'balance':round(balance,2),
+                'avg_s_faction':round(avg_s_faction,2),
+                'spending_per_day':round(spending_per_day,2)    
+            }
+        else:
+            response_dict = {} #-----------------------spillover workflow
+        return Response({"status":True, 
+                "msg": self.msg_ob.listed_successfully, 
+                "response":response_dict}, status=status.HTTP_200_OK)
+
+class DayByDAyAPIView(generics.GenericAPIView):
+    serializer_class = DayExpenseDetailSerializer
+    msg_ob = Custommessage()
+    month = timezone.now().month
+    
+    def generate_day_by_day_detail(self,expenses):
+        expense_dict = {}
+        for item in expenses:
+            if item['date'] not in expense_dict:
+                expense_dict[item['date']] = {
+                    'day_spending':item['price'],
+                    'categories':[item['category']],
+                    'avg_s_faction':item['s_faction']
+                }
+            else:
+                expense_dict[item['date']]['day_spending'] += item['price']
+                expense_dict[item['date']]['avg_s_faction'] = (float(expense_dict[item['date']]['avg_s_faction'])+float(item['s_faction']))/2
+                if item['category'] not in expense_dict[item['date']]['categories']:
+                    expense_dict[item['date']]['categories'].append(item['category'])
+                    
+        return expense_dict
+        
+    def get(self,request,*args,**kwargs):
         spend_objs = SpendwiseBasicDetails.objects.filter(date__month=self.month)
         if not spend_objs:
             spend_objs = SpendwiseBasicDetails.objects.filter(date__month=self.month-1) #Prev month
-        aggregates = spend_objs.aggregate(
-            total_spending=Sum('price'),
-            total_s_faction = Sum('s_faction')
-        )
-        balance = 1000 #Balance workflow (Income,Salary,-Total_spending)
-        avg_s_faction = aggregates['total_s_faction']/spend_objs.count()
-        spending_per_day = aggregates['total_spending']/spend_objs.values('date').distinct().count()
-        response_dict = {
-            'balance':round(balance,2),
-            'avg_s_faction':round(avg_s_faction,2),
-            'spending_per_day':round(spending_per_day,2)    
-        }
+            
+        response_dict = self.generate_day_by_day_detail(self.get_serializer(spend_objs,many=True).data)
         return Response({"status":True, 
                 "msg": self.msg_ob.listed_successfully, 
                 "response":response_dict}, status=status.HTTP_200_OK)

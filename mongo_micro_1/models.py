@@ -28,6 +28,7 @@ class SpendwiseBasicDetails(models.Model):
     category = models.IntegerField(default=CategoryChoices.FOOD,choices=CategoryChoices.choices)
     price = models.FloatField()
     s_faction = models.FloatField(default=2.5)
+    is_active = models.BooleanField(default=True)
     
     def __str__(self) -> str:
         return f'{self.reason}-{self.price}'
