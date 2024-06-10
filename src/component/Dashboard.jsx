@@ -36,7 +36,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchPieData();
-    console.log(pieData, '[[[[[[[[[[[[[[[[[[[[[');
   }, []);
 
   return (
@@ -78,8 +77,8 @@ const Dashboard = () => {
               </div>
               <div className="bg-white hover:cursor-pointer hover:bg-blue-100 rounded-lg shadow-md px-6 py-4 h-1/2 mx-2">
                 <div className='relative h-full w-full hover:scale-105 transform transition duration-300 hover:z-10'>
-                  <h3 className="text-xl font-bold mb-2">Investments, trips and more</h3>
-                  <p className="text-2xl font-semibold">Further divide the dic</p>
+                  <h3 className="text-xl font-bold mb-2">Master Data Graphs</h3>
+                  <p className="text-2xl font-semibold">-------------------</p>
                   <div></div>
                 </div>
               </div>
@@ -94,8 +93,8 @@ const Dashboard = () => {
               </div>
               <div className="bg-white rounded-lg shadow-md hover:bg-blue-100 px-6 py-4 h-1/2 mx-2 group">
                 <div className='relative hover:cursor-pointer h-full w-full hover:scale-105 transform transition duration-300 hover:z-10'>
-                  <h3 className="text-xl font-bold mb-2">Debts</h3>
-                  <p className="text-2xl font-semibold">--</p>
+                  <h3 className="text-xl font-bold mb-2">Investments, trips, debts and more</h3>
+                  <p className="text-2xl font-semibold">Further divide the div</p>
                   <div></div>
                 </div>
               </div>

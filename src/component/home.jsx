@@ -1,7 +1,8 @@
-import React from "react";
-import '../index.css'; 
-import api from './api.jsx'
-import ExpenseListing from './expenselisting.jsx'
+import React, { useState, useEffect } from 'react';
+import '../index.css';
+import api from './api.jsx';
+import ExpenseListing from './expenselisting.jsx';
+import ExpenseFilter from './ExpenseFilter.jsx';
 import { Line } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
@@ -15,8 +16,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { useState, useEffect } from 'react';
-import ExpenseForm from './expenseform.jsx'
+import ExpenseForm from './expenseform.jsx';
 
 ChartJS.register(
   CategoryScale,
@@ -84,10 +84,20 @@ const Home = () => {
     ],
   });
 
-  const fetchData = async () => {
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(new Date().getFullYear());
+
+  const fetchData = async (month = new Date().getMonth() + 1, year = new Date().getFullYear()) => {
     try {
-      const lineResponse = await api.get('/django/get-per-day-expense/');
-      const barResponse = await api.get('/django/get-category-wise-expense/');
+      const params = {
+        params: {
+          month: month,
+          year: year,
+        },
+      };
+
+      const lineResponse = await api.get('/django/get-per-day-expense/', params);
+      const barResponse = await api.get('/django/get-category-wise-expense/', params);
 
       if (lineResponse.data.expense_per_day) {
         const lineData = {
@@ -123,8 +133,14 @@ const Home = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(month, year);
+  }, [month, year]);
+
+  const handleFilterChange = (selectedMonth, selectedYear) => {
+    setMonth(selectedMonth);
+    setYear(selectedYear);
+    fetchData(selectedMonth, selectedYear);
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -133,9 +149,10 @@ const Home = () => {
       </div>
       <div className="flex flex-col md:flex-row">
         <div className="w-full md:w-2/3 p-2">
-          <ExpenseListing refreshGraph={fetchData} />
+          <ExpenseFilter month={month} year={year} onFilterChange={handleFilterChange} />
+          <ExpenseListing refreshGraph={() => fetchData(month, year)} month={month} year={year} />
         </div>
-        <div className="w-full md:w-1/3 p-2  ">
+        <div className="w-full md:w-1/3 p-2">
           <div className="flex flex-col sticky top-0">
             <div className="w-full p-2 hover:scale-105 transition transform duration-300">
               <Line data={graphData} options={options_line} className="h-96 hover:shadow-2xl hover:cursor-pointer rounded-2xl" />

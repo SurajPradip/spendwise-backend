@@ -2,23 +2,29 @@ import { useState, useEffect } from 'react';
 import React from "react";
 import api from './api';
 
-const ExpenseListing = ({ refreshGraph }) => {
+const ExpenseListing = ({ refreshGraph, month, year }) => {
   const [spending, setSpending] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchData = async (month, year) => {
+    try {
+      const response = await api.get('/django/create-or-list-spending-obj/', {
+        params: {
+          month: month,
+          year: year
+        }
+      });
+      setSpending(response.data.response);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get('/django/create-or-list-spending-obj/');
-        setSpending(response.data.response);
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+    fetchData(month, year);
+  }, [month, year]);
 
   const handleDelete = async (id) => {
     try {
@@ -55,21 +61,20 @@ const ExpenseListing = ({ refreshGraph }) => {
               <td className="px-4 py-2 border-r border-gray-400">{element.price}</td>
               <td className="px-4 py-2 border-r border-gray-400 w-1/8 flex items-center justify-center">
                 <div className="flex">
-                    <button
-                        onClick={() => handleDelete(element.id)}
-                        className="bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2"
-                        >
-                        x
-                        </button>
-                        <button
-                        onClick={() => handleEdit(element.id)}
-                        className="bg-yellow-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
-                        >
-                        E
-                    </button>
+                  <button
+                    onClick={() => handleDelete(element.id)}
+                    className="bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2"
+                  >
+                    x
+                  </button>
+                  <button
+                    onClick={() => handleEdit(element.id)}
+                    className="bg-yellow-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
+                  >
+                    E
+                  </button>
                 </div>
               </td>
-
             </tr>
           ))}
         </tbody>
