@@ -6,6 +6,7 @@ import ExpenseFilter from './ExpenseFilter.jsx';
 import { Line } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
+import { useNavigate } from 'react-router-dom';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -141,6 +142,15 @@ const Home = () => {
     setYear(selectedYear);
     fetchData(selectedMonth, selectedYear);
   };
+  const navigate = useNavigate();
+
+  const handleCategoryDetail = () => {
+    navigate('/category-detail/',{ state: { month, year } })
+  }
+
+  const handleMonthlyDetail = () => {
+    navigate('/monthly-detail/', { state: { month, year } });
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -154,11 +164,11 @@ const Home = () => {
         </div>
         <div className="w-full md:w-1/3 p-2">
           <div className="flex flex-col sticky top-0">
-            <div className="w-full p-2 hover:scale-105 transition transform duration-300">
+            <div className="w-full p-2 hover:scale-105 transition transform duration-300" onClick={handleMonthlyDetail}>
               <Line data={graphData} options={options_line} className="h-96 hover:shadow-2xl hover:cursor-pointer rounded-2xl" />
             </div>
             <div className="w-full p-2 hover:scale-105 transition transform duration-300">
-              <Bar data={barData} options={options_bar} className="h-96 hover:shadow-2xl hover:cursor-pointer rounded-2xl" />
+              <Bar data={barData} options={options_bar} className="h-96 hover:shadow-2xl hover:cursor-pointer rounded-2xl" onClick={handleCategoryDetail}/>
             </div>
           </div>
         </div>

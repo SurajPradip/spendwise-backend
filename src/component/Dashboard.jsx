@@ -65,14 +65,8 @@ const Dashboard = () => {
             <div className="w-1/2 space-y-4">
               <div className="bg-white hover:cursor-pointer hover:bg-blue-100 rounded-lg shadow-md px-6 py-4 h-1/2 mx-2">
                 <div className='relative h-full w-full hover:scale-105 transform transition duration-300 hover:z-10' onClick={goToExpense}>
-                  <h3 className="text-xl font-bold mb-2">Expense</h3>
-                  <p className="text-2xl font-semibold">Pie chart of expenses and a list of latest transactions</p>
-                  <div className='flex w-full items-center justify-center h-3/4'>
-                    <div className='w-1/3 items-center justify-center h-3/4 m-2'>
-                      {pieData && <Pie data={pieData} className="rounded-lg hover:cursor-pointer" />}
-                    </div>
-                    <div className='w-1/2 items-center justify-center h-3/4 m-2'></div>
-                  </div>
+                  <h3 className="text-xl font-bold mb-2">Something</h3>
+                  <p className="text-2xl font-semibold">something something</p>
                 </div>
               </div>
               <div className="bg-white hover:cursor-pointer hover:bg-blue-100 rounded-lg shadow-md px-6 py-4 h-1/2 mx-2">
@@ -80,6 +74,20 @@ const Dashboard = () => {
                   <h3 className="text-xl font-bold mb-2">Master Data Graphs</h3>
                   <p className="text-2xl font-semibold">-------------------</p>
                   <div></div>
+                </div>
+              </div>
+            </div>
+            {/* group hover the below div */}
+            <div className=' w-3/4 flex items-center justify-center h-full hover:cursor-pointer bg-white shadow-lg rounded-lg space-y-4 hover:bg-blue-100' onClick={goToExpense}>
+              <div>
+                <div className='relative h-full w-full hover:scale-105 transform transition duration-300 hover:z-10' onClick={goToExpense}>
+                  <h3 className="text-xl font-bold mb-2">Expense</h3>
+                  <div className='flex w-full items-center justify-center h-full'>
+                    <div className=' items-center justify-center h-3/4 m-2 scale-105'>
+                      {pieData && <Pie data={pieData} className="rounded-lg hover:cursor-pointer" />}
+                    </div>
+                    <div className='w-1/2 items-center justify-center h-3/4 m-2'></div>
+                  </div>
                 </div>
               </div>
             </div>

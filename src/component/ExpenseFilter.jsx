@@ -6,28 +6,42 @@ const ExpenseFilter = ({ month, year, onFilterChange }) => {
     "July", "August", "September", "October", "November", "December"
   ];
 
-  const handleMonthChange = (e) => {
-    onFilterChange(e.target.value, year);
+  const handleMonthChange = (newMonth) => {
+    onFilterChange(newMonth, year);
   };
 
   const handleYearChange = (e) => {
     onFilterChange(month, e.target.value);
   };
 
+  const incrementMonth = () => {
+    const newMonth = month === 12 ? 1 : month + 1;
+    handleMonthChange(newMonth);
+  };
+
+  const decrementMonth = () => {
+    const newMonth = month === 1 ? 12 : month - 1;
+    handleMonthChange(newMonth);
+  };
+
   return (
     <div className="flex flex-col md:flex-row items-center mb-4">
       <div className="flex flex-col mb-2 md:mb-0 md:mr-4">
         <label htmlFor="month" className="mb-1 text-gray-700 font-semibold">Month</label>
-        <select 
-          id="month" 
-          value={month} 
-          onChange={handleMonthChange} 
-          className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          {monthNames.map((name, index) => (
-            <option key={index} value={index + 1}>{name}</option>
-          ))}
-        </select>
+        <div className="flex items-center">
+          <button onClick={decrementMonth} className="mr-2 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400">&lt;</button>
+          <select 
+            id="month" 
+            value={month} 
+            onChange={(e) => handleMonthChange(parseInt(e.target.value))} 
+            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            {monthNames.map((name, index) => (
+              <option key={index} value={index + 1}>{name}</option>
+            ))}
+          </select>
+          <button onClick={incrementMonth} className="ml-2 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400">&gt;</button>
+        </div>
       </div>
       <div className="flex flex-col">
         <label htmlFor="year" className="mb-1 text-gray-700 font-semibold">Year</label>
