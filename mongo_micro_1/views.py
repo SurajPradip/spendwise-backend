@@ -116,7 +116,6 @@ class DeleteSpendingObjAPIView(generics.GenericAPIView):
 
 class SpendingSummaryAPIView(generics.GenericAPIView):
     msg_ob = Custommessage()
-    month = timezone.now().month
     
     def get(self,request,*args,**kwargs):
         month = request.GET.get('month') if request.GET.get('month') else timezone.now().month
@@ -153,12 +152,12 @@ class DayByDAyAPIView(generics.GenericAPIView):
         for item in expenses:
             if item['date'] not in expense_dict:
                 expense_dict[item['date']] = {
-                    'day_spending':item['price'],
+                    'day_spending':round(item['price'],2),
                     'categories':[item['category']],
                     'avg_s_faction':item['s_faction']
                 }
             else:
-                expense_dict[item['date']]['day_spending'] += item['price']
+                expense_dict[item['date']]['day_spending'] += round(item['price'],2)
                 expense_dict[item['date']]['avg_s_faction'] = (float(expense_dict[item['date']]['avg_s_faction'])+float(item['s_faction']))/2
                 if item['category'] not in expense_dict[item['date']]['categories']:
                     expense_dict[item['date']]['categories'].append(item['category'])
@@ -166,11 +165,29 @@ class DayByDAyAPIView(generics.GenericAPIView):
         return expense_dict
         
     def get(self,request,*args,**kwargs):
-        spend_objs = SpendwiseBasicDetails.objects.filter(date__month=self.month)
-        if not spend_objs:
-            spend_objs = SpendwiseBasicDetails.objects.filter(date__month=self.month-1) #Prev month
+        month = request.GET.get('month') if request.GET.get('month') else timezone.now().month
+        year = request.GET.get('year') if request.GET.get('year') else timezone.now().year
+        
+        spend_objs = SpendwiseBasicDetails.objects.filter(date__month=month,date__year=year).order_by('-date')
             
         response_dict = self.generate_day_by_day_detail(self.get_serializer(spend_objs,many=True).data)
+        return Response({"status":True, 
+                "msg": self.msg_ob.listed_successfully, 
+                "response":response_dict}, status=status.HTTP_200_OK)
+
+class DaySpendingAPIView(generics.GenericAPIView):
+    msg_ob = Custommessage()
+    serializer_class = DayExpenseDetailSerializer
+    def get(self,request,*args,**kwargs):
+        month = request.GET.get('month') if request.GET.get('month') else timezone.now().month
+        year = request.GET.get('year') if request.GET.get('year') else timezone.now().year
+        day = self.kwargs['day']
+
+        spend_objs = SpendwiseBasicDetails.objects.filter(
+            date__day=day,date__month=month,date__year=year).order_by('price')
+        
+        response_dict = self.get_serializer(spend_objs,many=True).data
+        
         return Response({"status":True, 
                 "msg": self.msg_ob.listed_successfully, 
                 "response":response_dict}, status=status.HTTP_200_OK)
