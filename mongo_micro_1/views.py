@@ -221,7 +221,7 @@ class GrantGRaphAPIView(generics.GenericAPIView):
             month_spend_objs = spend_objs.filter(date__month=month)
             expenses = self.get_serializer(month_spend_objs,many=True).data
             daily_expense = self.generate_daily_expense(expenses)
-            response_list.append({
+            response_list.append({                      #Add pagination too too much graph 
                 'month':month,
                 'data':daily_expense
             })
