@@ -10,8 +10,7 @@ urlpatterns = [
     path('balance-and-spending-summary/',views.SpendingSummaryAPIView.as_view(),name='balance-and-spending-summary'),
     path('get-day-by-day-detail/',views.DayByDAyAPIView.as_view(),name='get-day-by-day-detail'),
     path('day-spending/<int:day>/',views.DaySpendingAPIView.as_view(),name='day-spending'),
-    
-    # path('get-all-month-graph-datas',views.AllMonthGraphDataAPIView.as_view(),name='get-all-month-graph-data'),
+    path('get-grant-graphs/',views.GrantGRaphAPIView().as_view(),name='get-all-month-graph-data'),
     # path('monthly-spending-bar-graph/',views.MonthlySpendingBarGraphAPIView.as_view(),name='monthly-spending-bar-graph'),
     
 ]

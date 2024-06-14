@@ -191,3 +191,41 @@ class DaySpendingAPIView(generics.GenericAPIView):
         return Response({"status":True, 
                 "msg": self.msg_ob.listed_successfully, 
                 "response":response_dict}, status=status.HTTP_200_OK)
+
+class GrantGRaphAPIView(generics.GenericAPIView):
+    serializer_class = DayExpenseGraphSerializer
+    msg_ob = Custommessage()
+    def generate_daily_expense(self,expenses):
+        expense_dict = {
+            'labels':[],
+            'data':[],
+            'index':{}
+        }
+        for item in expenses:
+            date = item['date']
+            if date not in expense_dict['labels']:
+                expense_dict['labels'].append(date)
+                expense_dict['data'].append(item['price'])
+                expense_dict['index'][date]=expense_dict['labels'].index(date)
+            else:
+                index = expense_dict['labels'].index(date)
+                expense_dict['data'][index] += item['price']
+
+        return expense_dict
+             
+    def get(self,request,*args,**kwargs):        
+        response_list = []                                  #Breaks when year comes in to play
+        spend_objs = SpendwiseBasicDetails.objects.filter(is_active=True)
+        months = spend_objs.values_list('date__month',flat=True).distinct()
+        for month in months:
+            month_spend_objs = spend_objs.filter(date__month=month)
+            expenses = self.get_serializer(month_spend_objs,many=True).data
+            daily_expense = self.generate_daily_expense(expenses)
+            response_list.append({
+                'month':month,
+                'data':daily_expense
+            })
+            
+        return Response({"status":True, 
+                "msg": self.msg_ob.listed_successfully, 
+                "response":response_list}, status=status.HTTP_200_OK)
